@@ -33,8 +33,10 @@ public struct AppleGeocoder {
         func getPlacemark(location: String) -> AnyPublisher<CLPlacemark, Error> {
             return Future { promise in
                 self.geocoder.geocodeAddressString(location) {
-                    if $1 == nil, let placemarks = $0, let placemark = placemarks.first {
-                        promise(Result.success(placemark))
+                    if let error = $1 {
+                        promise(.failure(error))
+                    } else if let placemark = $0?.first {
+                        promise(.success(placemark))
                     }
                 }
             }

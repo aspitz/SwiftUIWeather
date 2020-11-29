@@ -1,5 +1,5 @@
 //
-//  NOAAWatherService2.swift
+//  NOAAWatherService.swift
 //  WeatherApp
 //
 //  Created by Ayal Spitz on 11/28/20.
@@ -27,12 +27,9 @@ public struct NOAAWeather {
             return URLSession.shared.dataTaskPublisher(for: weatherPointForecastURL)
                 .map { $0.data }
                 .decode(type: NOAAWeather.PointModel.self, decoder: decoder)
-                .map { $0.properties }
-                .replaceError(with: nil)
-                .compactMap{ $0 }
-                .map { $0.forecast }
-                .map { URL(string: $0)! }.print()
-                .flatMap { URLSession.shared.dataTaskPublisher(for: $0) }
+                .map { $0.properties.forecast }
+                .map { URL(string: $0)! }
+                .flatMap { URLSession.shared.dataTaskPublisher(for: $0).mapError { $0 as Error } }
                 .map { $0.data }
                 .decode(type: NOAAWeather.ForecastModel.self, decoder: decoder)
                 .eraseToAnyPublisher()

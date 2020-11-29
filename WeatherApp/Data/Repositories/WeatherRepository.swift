@@ -72,7 +72,10 @@ private extension ForecastEntity.Location {
 
 private extension ForecastEntity.PeriodForecast {
     init(period: NOAAWeather.ForecastModel.Properties.Period) {
-        self.init(title: period.name, forecast: period.detailedForecast, temperature: period.temperature)
+        self.init(id: period.number,
+                  title: period.name,
+                  forecast: period.detailedForecast,
+                  temperature: period.temperature)
     }
 }
 

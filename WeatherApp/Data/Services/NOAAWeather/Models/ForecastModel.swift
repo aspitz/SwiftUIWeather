@@ -11,8 +11,6 @@ extension NOAAWeather {
     public struct ForecastModel: Decodable {
         public struct Properties: Decodable {
             public struct Period: Decodable {
-                public var id: Int { return number }
-                
                 public let number: Int
                 public let name: String
                 public let startTime: String

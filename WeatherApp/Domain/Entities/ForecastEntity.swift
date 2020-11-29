@@ -14,6 +14,7 @@ public struct ForecastEntity {
     }
     
     public struct PeriodForecast {
+        let id: Int
         let title: String
         let forecast: String
         let temperature: Int

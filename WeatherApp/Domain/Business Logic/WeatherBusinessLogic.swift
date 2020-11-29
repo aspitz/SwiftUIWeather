@@ -28,7 +28,7 @@ class WeatherBusinessLogic: ObservableObject {
         sharedForecast
             .map { $0.location }
             .map { "\($0.city), \($0.state)" }
-            .receive(on: RunLoop.main)
+            .receive(on: DispatchQueue.main)
             .replaceError(with: "")
             .assign(to: \.location, on: self)
             .store(in: &cancellable)
@@ -36,14 +36,14 @@ class WeatherBusinessLogic: ObservableObject {
         sharedForecast
             .map { $0.forecasts }
             .map { $0.map(ForecastViewModel.init(model:)) }
-            .receive(on: RunLoop.main)
+            .receive(on: DispatchQueue.main)
             .replaceError(with: [])
             .assign(to: \.forecasts, on: self)
             .store(in: &cancellable)
         
         sharedForecast
             .map { $0.updated }
-            .receive(on: RunLoop.main)
+            .receive(on: DispatchQueue.main)
             .replaceError(with: nil)
             .assign(to: \.updateDate, on: self)
             .store(in: &cancellable)

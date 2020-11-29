@@ -14,12 +14,8 @@ public struct ForecastViewModel: Identifiable {
     public let forecast: String
     public let temperature: Int
     
-    static var count: Int = 0
-    
     public init(model: ForecastEntity.PeriodForecast) {
-        self.id = ForecastViewModel.count
-        ForecastViewModel.count += 1
-        
+        self.id = model.id
         self.title = model.title
         self.forecast = model.forecast
         self.temperature = model.temperature
