@@ -13,7 +13,7 @@ struct ForecastView: View {
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
-                Text(viewModel.name)
+                Text(viewModel.title)
                     .font(.headline)
                 Text(viewModel.forecast)
                     .font(.footnote)
@@ -26,8 +26,8 @@ struct ForecastView: View {
     }
 }
 
-struct ForecastView_Previews: PreviewProvider {
-    static var previews: some View {
-        ForecastView(viewModel: Mock.forecast)
-    }
-}
+//struct ForecastView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        ForecastView(viewModel: Mock.forecast)
+//    }
+//}
