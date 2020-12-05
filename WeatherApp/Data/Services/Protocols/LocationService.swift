@@ -10,5 +10,5 @@ import CoreLocation
 import Combine
 
 public protocol LocationService {
-    func getLocation() -> AnyPublisher<CLLocationCoordinate2D, Never>
+    func getLocation() -> AnyPublisher<CLLocationCoordinate2D, Error>
 }

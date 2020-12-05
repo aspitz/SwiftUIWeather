@@ -15,7 +15,7 @@ class WeatherRepository: WeatherRepositoryProtocol {
     private var geocorderService: GeocoderService
     private var weatherService: WeatherService
     
-    private var locationSubject: PassthroughSubject<CLLocationCoordinate2D, Never>
+    private var locationSubject: PassthroughSubject<CLLocationCoordinate2D, Error>
     private var locationCancellable: AnyCancellable
     
     init(locationService: LocationService = AppleLocation.Service.default,
@@ -58,7 +58,7 @@ class WeatherRepository: WeatherRepositoryProtocol {
         locationCancellable = geocorderService.getPlacemark(location: location)
             .compactMap { $0.location }
             .map { $0.coordinate }
-            .catch { _ in Empty<CLLocationCoordinate2D, Never>() }
+            .catch { _ in Empty<CLLocationCoordinate2D, Error>() }
             .eraseToAnyPublisher()
             .subscribe(locationSubject)
     }

@@ -13,20 +13,23 @@ public struct AppleLocation {
     class Service: NSObject, LocationService {
         static public var `default` = Service()
         
-        @Published private var currentLocation: CLLocationCoordinate2D?
-
+        private let currentLocationSubject: PassthroughSubject<CLLocationCoordinate2D, Error>
         private let locationManager = CLLocationManager()
         
         override private init() {
+            currentLocationSubject = PassthroughSubject<CLLocationCoordinate2D, Error>()
+            
             super.init()
+            
             self.locationManager.delegate = self
             self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
             self.locationManager.requestWhenInUseAuthorization()
-            self.locationManager.startUpdatingLocation()
         }
         
-        func getLocation() -> AnyPublisher<CLLocationCoordinate2D, Never> {
-            return $currentLocation
+        func getLocation() -> AnyPublisher<CLLocationCoordinate2D, Error> {
+            locationManager.requestLocation()
+            
+            return currentLocationSubject
                 .compactMap{ $0 }
                 .removeDuplicates()
                 .eraseToAnyPublisher()
@@ -37,6 +40,10 @@ public struct AppleLocation {
 extension AppleLocation.Service: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
-        currentLocation = location.coordinate
+        currentLocationSubject.send(location.coordinate)
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        currentLocationSubject.send(completion: .failure(error))
     }
 }
