@@ -59,4 +59,8 @@ class WeatherBusinessLogic: ObservableObject {
         
         weatherRepository.forecast(for: location)
     }
+    
+    func forecastForCurentLocation() {
+        weatherRepository.forecastForCurentLocation()
+    }
 }

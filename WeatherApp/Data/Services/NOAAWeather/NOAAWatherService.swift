@@ -13,10 +13,16 @@ import Combine
 // https://api.weather.gov/gridpoints/BOX/70,76/forecast/hourly
 
 public struct NOAAWeather {
-    struct Service: WeatherService {
+    class Service: WeatherService {
         private var cancellable: Set<AnyCancellable> = Set<AnyCancellable>()
-
+        
         func getForecast(for location: CLLocationCoordinate2D) -> AnyPublisher<NOAAWeather.ForecastModel, Error> {
+            return getPoint(for: location)
+                .flatMap(getForecast(pointForecast:))
+                .eraseToAnyPublisher()
+        }
+        
+        func getPoint(for location: CLLocationCoordinate2D) -> AnyPublisher<String, Error> {
             let locationString = "\(location.latitude),\(location.longitude)"
             let weatherPointForecast = "https://api.weather.gov/points/\(locationString)"
             let weatherPointForecastURL = URL(string: weatherPointForecast)!
@@ -28,11 +34,26 @@ public struct NOAAWeather {
                 .map { $0.data }
                 .decode(type: NOAAWeather.PointModel.self, decoder: decoder)
                 .map { $0.properties.forecast }
-                .map { URL(string: $0)! }
-                .flatMap { URLSession.shared.dataTaskPublisher(for: $0).mapError { $0 as Error } }
+                .eraseToAnyPublisher()
+        }
+        
+        func getForecast(pointForecast: String) -> AnyPublisher<NOAAWeather.ForecastModel, Error> {
+            let pointForecastURL = URL(string: pointForecast)!
+            
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .iso8601
+
+            return URLSession.shared.dataTaskPublisher(for: pointForecastURL)
                 .map { $0.data }
                 .decode(type: NOAAWeather.ForecastModel.self, decoder: decoder)
                 .eraseToAnyPublisher()
         }
+    }
+}
+
+extension CLLocationCoordinate2D: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(latitude)
+        hasher.combine(longitude)
     }
 }

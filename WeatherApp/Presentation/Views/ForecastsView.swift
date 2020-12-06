@@ -13,7 +13,13 @@ struct ForecastsView: View {
 
     var body: some View {
         List {
-            TextField("Location", text: $location, onCommit: { businessLogic.forecast(for: location) })
+            HStack {
+                TextField("Location", text: $location, onCommit: { businessLogic.forecast(for: location) })
+                Button(action: { businessLogic.forecastForCurentLocation() },
+                       label: { Image(systemName: "location").foregroundColor(.blue) }
+                )
+                .buttonStyle(PlainButtonStyle())
+            }
             ForEach(businessLogic.forecasts) { forecast in
                 ForecastView(viewModel: forecast)
             }

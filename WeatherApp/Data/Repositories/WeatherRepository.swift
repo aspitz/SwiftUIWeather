@@ -12,6 +12,7 @@ import Combine
 class WeatherRepository: WeatherRepositoryProtocol {
     var forecast: AnyPublisher<ForecastEntity, Error>
 
+    private var locationService: LocationService
     private var geocorderService: GeocoderService
     private var weatherService: WeatherService
     
@@ -22,6 +23,7 @@ class WeatherRepository: WeatherRepositoryProtocol {
          geocorderService: GeocoderService = AppleGeocoder.Service.default,
          weatherService: WeatherService = NOAAWeather.Service()) {
 
+        self.locationService = locationService
         self.geocorderService = geocorderService
         self.weatherService = weatherService
         
@@ -60,6 +62,11 @@ class WeatherRepository: WeatherRepositoryProtocol {
             .map { $0.coordinate }
             .catch { _ in Empty<CLLocationCoordinate2D, Error>() }
             .eraseToAnyPublisher()
+            .subscribe(locationSubject)
+    }
+
+    func forecastForCurentLocation() {
+        locationCancellable = locationService.getLocation()
             .subscribe(locationSubject)
     }
 }

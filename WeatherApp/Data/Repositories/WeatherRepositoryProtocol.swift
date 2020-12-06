@@ -12,5 +12,6 @@ protocol WeatherRepositoryProtocol {
     var forecast: AnyPublisher<ForecastEntity, Error> { get }
 
     func forecast(for location: String)
+    func forecastForCurentLocation()
 }
 
